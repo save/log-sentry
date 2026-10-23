@@ -1,6 +1,6 @@
 # logsentry
 
-a simple c++ log analyzer and brute-force detector
+a simple c++ log analyzer and brute-force detector (yes i know it can be better ill prolly make it decent soon)
 
 ---
 
