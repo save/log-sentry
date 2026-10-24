@@ -1,10 +1,20 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <unordered_map>
 
-
-inline constexpr std::string_view border = "\n---------------------------\n";
+bool isIPv4(const std::string& token) {
+    int dotCount = 0;
+    for (char c : token) {
+        if (c == '.') {
+            dotCount++;
+        }
+        else if (!isdigit(c)) {
+            return false;
+        }
+    }
+}
 
 std::unordered_map<std::string, int> analyzeLogFile(const std::string& filename) {
     std::ifstream file(filename);
@@ -16,21 +26,23 @@ std::unordered_map<std::string, int> analyzeLogFile(const std::string& filename)
     }
 
     std::cout << "[+] Successfully opened: " << filename << "\n";
-    std::cout << border;
 
     for (std::string line; std::getline(file, line); ) {
-        std::cout << line << '\n';
 
         if (line.find("Failed") != std::string::npos) {
-            size_t fromPos = line.find("from");
-            if (fromPos != std::string::npos) {
-                std::string ipAddress = line.substr(fromPos + 5);
-                failedIpCounts[ipAddress]++;
-                std::cout << "[-] Failed login attempt from: " << ipAddress << "\n";
-            }
+           std::istringstream stream(line);
+           std::string token;
+
+           while (stream >> token) {
+               if (isIPv4(token)) {
+                   failedIpCounts[token]++;
+               }
+           }
+
+       
         }
         else if (line.find("sudo") != std::string::npos) {
-            std::cout << "[+] Found a sudo log entry: " << line << "\n";
+			// do nothing - might add more logic here in the future if needed
         }
     }
 
@@ -46,10 +58,10 @@ void generateReport(const std::unordered_map<std::string, int>& failedIpCounts, 
         return;
     }
 
-    std::cout << border;
-    std::cout << "Summary of failed login attempts:\n";
-
-    reportFile << "Summary of failed login attempts:\n";
+    std::string title = "\nSummary of failed login attempts:\n";
+    std::string border(title.length(), '-');
+	std::cout << title << border << "\n";
+    reportFile << title;
 
     for (const auto& pair : failedIpCounts) {
         std::string ip = pair.first;
@@ -71,7 +83,8 @@ void generateReport(const std::unordered_map<std::string, int>& failedIpCounts, 
     reportFile << border;
 
     reportFile.close();
-    std::cout << "[+] Report generated successfully in " << reportFilename << "\n";
+    std::string reportMsg = "[+] Report generated successfully in ";
+    std::cout << reportMsg << reportFilename << border << "\n";
 }
 
 int main(int argc, char* argv[]) {
