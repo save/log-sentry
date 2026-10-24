@@ -4,6 +4,7 @@
 #include <sstream>
 #include <unordered_map>
 
+// yes i know the validation is a bit of a yeouch give me time
 bool isIPv4(const std::string& token) {
     int dotCount = 0;
     for (char c : token) {
