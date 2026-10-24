@@ -3,6 +3,9 @@
 #include <string>
 #include <unordered_map>
 
+
+inline constexpr std::string_view border = "\n---------------------------\n";
+
 std::unordered_map<std::string, int> analyzeLogFile(const std::string& filename) {
     std::ifstream file(filename);
     std::unordered_map<std::string, int> failedIpCounts;
@@ -13,7 +16,7 @@ std::unordered_map<std::string, int> analyzeLogFile(const std::string& filename)
     }
 
     std::cout << "[+] Successfully opened: " << filename << "\n";
-    std::cout << "----------------------------------------\n";
+    std::cout << border;
 
     for (std::string line; std::getline(file, line); ) {
         std::cout << line << '\n';
@@ -43,7 +46,7 @@ void generateReport(const std::unordered_map<std::string, int>& failedIpCounts, 
         return;
     }
 
-    std::cout << "\n===============================\n";
+    std::cout << border;
     std::cout << "Summary of failed login attempts:\n";
 
     reportFile << "Summary of failed login attempts:\n";
@@ -64,8 +67,8 @@ void generateReport(const std::unordered_map<std::string, int>& failedIpCounts, 
         }
     }
 
-    std::cout << "===============================\n";
-    reportFile << "===============================\n";
+    std::cout << border;
+    reportFile << border;
 
     reportFile.close();
     std::cout << "[+] Report generated successfully in " << reportFilename << "\n";
